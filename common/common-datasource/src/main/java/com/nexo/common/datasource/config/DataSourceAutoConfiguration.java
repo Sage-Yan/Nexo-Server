@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
  * @created by YanShijie
  */
 @Configuration
-@MapperScan(basePackages = "com.nexo.business.*.mapper")
+@MapperScan(basePackages = "com.nexo.business.*.infrastructure.mapper")
 public class DataSourceAutoConfiguration {
 
     @Bean

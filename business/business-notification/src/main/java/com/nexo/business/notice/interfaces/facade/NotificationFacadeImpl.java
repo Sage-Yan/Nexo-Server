@@ -1,4 +1,4 @@
-package com.nexo.business.notice.facade;
+package com.nexo.business.notice.interfaces.facade;
 
 import cn.hutool.core.util.RandomUtil;
 import com.nexo.business.notice.domain.constant.NotificationState;
@@ -67,7 +67,6 @@ public class NotificationFacadeImpl implements NotificationFacade {
                         notification.setFailMessage(errorMsg);
                         notificationService.updateById(notification);
                     }
-
                 });
         // 6. 返回结果
         NotificationResponse response = new NotificationResponse();

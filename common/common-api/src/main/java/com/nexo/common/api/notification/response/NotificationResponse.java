@@ -6,7 +6,7 @@ import java.io.Serial;
 
 /**
  * @classname NotificationResponse
- * @description 通知服务响应类
+ * @description 通知RPC响应类
  * @date 2025/11/30 13:11
  * @created by YanShijie
  */
