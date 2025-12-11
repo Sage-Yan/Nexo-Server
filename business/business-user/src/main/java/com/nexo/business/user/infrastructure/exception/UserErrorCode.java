@@ -1,6 +1,8 @@
 package com.nexo.business.user.infrastructure.exception;
 
 import com.nexo.common.base.exception.code.ErrorCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * @classname UserErrorCode
@@ -8,14 +10,15 @@ import com.nexo.common.base.exception.code.ErrorCode;
  * @date 2025/12/02 09:11
  * @created by YanShijie
  */
-public class UserErrorCode implements ErrorCode {
-    @Override
-    public String getCode() {
-        return "";
-    }
 
-    @Override
-    public String getMessage() {
-        return "";
-    }
+@Getter
+@AllArgsConstructor
+public enum UserErrorCode implements ErrorCode {
+
+
+    ;
+
+    private final String code;
+
+    private final String message;
 }

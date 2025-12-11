@@ -2,6 +2,9 @@ package com.nexo.common.api.user.response.data;
 
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * @classname UserInfo
  * @description 用户登录返回信息
@@ -9,7 +12,10 @@ import lombok.Data;
  * @created by YanShijie
  */
 @Data
-public class UserInfo {
+public class UserInfo implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Long id;
 

@@ -26,7 +26,7 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users`
 (
     `id`          BIGINT UNSIGNED                      NOT NULL AUTO_INCREMENT COMMENT '用户ID（主键）',
-    `nick_name`    VARCHAR(255)                                  DEFAULT NULL COMMENT '昵称/显示名',
+    `nick_name`    VARCHAR(255)                        UNIQUE COMMENT '昵称/显示名',
     `password`    VARCHAR(255)                         NOT NULL COMMENT '密码哈希（bcrypt/argon2）',
     `state`      ENUM ('ACTIVE','FROZEN','SUSPENDED') NOT NULL DEFAULT 'ACTIVE' COMMENT '用户状态',
     `invite_code` VARCHAR(64)                                   DEFAULT NULL COMMENT '邀请码（可唯一）',

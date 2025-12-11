@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 /**
  * @classname UserConverter
- * @description 用户模块MapStruct
+ * @description 用户模块 MapStruct
  * @date 2025/12/03 18:59
  * @created by YanShijie
  */

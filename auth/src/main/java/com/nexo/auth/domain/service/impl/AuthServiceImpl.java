@@ -21,6 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
+import java.util.Objects;
 
 import static com.nexo.auth.domain.constant.AuthConstant.SESSION_TIMEOUT;
 import static com.nexo.common.api.notification.constant.NotificationConstant.CAPTCHA_KEY_PREFIX;
@@ -53,24 +57,25 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        // 1. 验证码校验
+        // 1. 校验验证码
         isValidVerifyCode(request.getPhone(), request.getVerifyCode());
-        // 2. 检查用户是否已注册
+        // 2. 校验用户已存在
         UserInfo userInfo = checkUser(request.getPhone(), true);
         // 3. 用户登录
-        StpUtil.login(userInfo.getId(),  new SaLoginParameter().setIsLastingCookie(request.getRememberMe()).setTimeout(SESSION_TIMEOUT));
+        boolean rememberMe = Boolean.TRUE.equals(request.getRememberMe());
+        StpUtil.login(userInfo.getId(), new SaLoginParameter().setIsLastingCookie(rememberMe).setTimeout(SESSION_TIMEOUT));
         // 4. 保存用户信息到会话
-        StpUtil.getSession().set(userInfo.getId().toString(), userInfo.toString());
+        StpUtil.getSession().set("userInfo", userInfo);
         // 5. 封装返回数据
         return new LoginResponse(userInfo.getId(), StpUtil.getTokenValue(), StpUtil.getSessionTimeout());
     }
 
     @Override
     public Boolean register(RegisterRequest request) {
-        // 1. 验证码校验
-        isValidVerifyCode(request.getPhone(), request.getVerifyCode());
-        // 2. 检查用户是否已注册
+        // 1. 校验用户不存在
         checkUser(request.getPhone(), false);
+        // 2. 校验验证码
+        isValidVerifyCode(request.getPhone(), request.getVerifyCode());
         // 3. 注册用户
         // 3.1 构造注册请求
         UserRegisterRequest registerRequest = new UserRegisterRequest();
@@ -89,21 +94,28 @@ public class AuthServiceImpl implements AuthService {
      * @param verifyCode 验证码
      */
     private void isValidVerifyCode(String phone, String verifyCode) {
-        // 1. 获取验证码
-        String code = stringRedisTemplate.opsForValue().get(CAPTCHA_KEY_PREFIX + phone);
-        // 2. 判断验证码是否一致
-        if (!verifyCode.equals(code)) {
+        if (!StringUtils.hasText(phone) || !StringUtils.hasText(verifyCode)) {
             throw new AuthException(AuthErrorCode.VERIFY_CODE_ERROR);
         }
+        // 1. 获取验证码
+        String key = CAPTCHA_KEY_PREFIX + phone;
+        String code = stringRedisTemplate.opsForValue().get(key);
+        // 2. 判断验证码是否一致
+        if (!Objects.equals(code, verifyCode)) {
+            throw new AuthException(AuthErrorCode.VERIFY_CODE_ERROR);
+        }
+        // 3. 校验通过后移除验证码，避免重复使用
+        stringRedisTemplate.delete(key);
     }
 
     /**
      * 检查用户是否存在
+     *
      * @param phone 手机号
-     * @param isExist 要检查是否存在
+     * @param shouldExist 是否应该存在
      * @return 用户信息
      */
-    private UserInfo checkUser(String phone, boolean isExist) {
+    private UserInfo checkUser(String phone, boolean shouldExist) {
         // 1. 构造查询请求
         UserQueryRequest queryRequest = new UserQueryRequest();
         queryRequest.setCondition(new UserQueryByPhone(phone));
@@ -112,14 +124,11 @@ public class AuthServiceImpl implements AuthService {
         // 3. 从查询响应拿到数据
         UserInfo userInfo = queryResponse.getData();
         // 4. 验证用户是否存在
-        if (isExist) {
-            if (userInfo == null) {
-                throw new AuthException(AuthErrorCode.USER_NOT_EXIST);
-            }
-        } else {
-            if (userInfo != null) {
-                throw new AuthException(AuthErrorCode.USER_EXIST);
-            }
+        if (shouldExist && userInfo == null) {
+            throw new AuthException(AuthErrorCode.USER_NOT_EXIST);
+        }
+        if (!shouldExist && userInfo != null) {
+            throw new AuthException(AuthErrorCode.USER_EXIST);
         }
         return userInfo;
     }

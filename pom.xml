@@ -52,7 +52,7 @@
         </dependencies>
     </dependencyManagement>
 
-    <!--防止idea语言等级自动变化-->
+    <!--防止 idea 语言等级自动变化-->
     <build>
         <plugins>
             <plugin>

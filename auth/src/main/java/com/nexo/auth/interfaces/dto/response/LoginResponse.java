@@ -14,12 +14,12 @@ import lombok.Data;
 public class LoginResponse {
 
     /**
-     * 用户ID
+     * 用户 ID
      */
     private Long userId;
 
     /**
-     * 登录Token
+     * 登录 Token
      */
     private String token;
 
