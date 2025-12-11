@@ -5,14 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nexo.business.user.domin.entity.User;
 import com.nexo.business.user.domin.service.UserService;
-import com.nexo.business.user.infrastructure.exception.UserErrorCode;
-import com.nexo.business.user.infrastructure.exception.UserException;
 import com.nexo.business.user.infrastructure.mapper.UserMapper;
 import com.nexo.business.user.infrastructure.mapstruct.UserConverter;
 import com.nexo.common.api.user.constant.UserState;
 import com.nexo.common.api.user.response.data.UserInfo;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RBloomFilter;
 import org.springframework.stereotype.Service;
 
 /**
